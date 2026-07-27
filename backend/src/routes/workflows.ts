@@ -51,29 +51,6 @@ type WorkflowMetadata = {
   practice: string | null;
   jurisdictions: string[] | null;
 };
-type OpenSourceSubmissionStatus = "pending" | "approved" | "rejected";
-
-type OpenSourceSubmissionRow = {
-  id: string;
-  workflow_id: string;
-  submitted_by_user_id: string;
-  submitter_email: string | null;
-  submitter_name: string | null;
-  contributor_mode?: "named" | "anonymous";
-  status: OpenSourceSubmissionStatus;
-  snapshot: unknown;
-  submitted_at: string;
-  updated_at: string;
-  reviewed_at?: string | null;
-  review_notes?: string | null;
-};
-
-type OpenSourceSubmissionSummary = Pick<
-  OpenSourceSubmissionRow,
-  "id" | "status" | "submitted_at" | "updated_at"
-> & {
-  reviewed_at?: string | null;
-};
 
 const DEFAULT_WORKFLOW_CONTRIBUTOR: WorkflowContributor = {
   name: "Courier",
@@ -84,8 +61,6 @@ const DEFAULT_WORKFLOW_CONTRIBUTOR: WorkflowContributor = {
 const DEFAULT_WORKFLOW_LANGUAGE = "English";
 const DEFAULT_WORKFLOW_PRACTICE = "General Transactions";
 const DEFAULT_WORKFLOW_JURISDICTIONS = ["General"];
-const WORKFLOW_CONTRIBUTIONS_ENABLED =
-  process.env.WORKFLOW_CONTRIBUTIONS_ENABLED === "true";
 
 type WorkflowAccess =
   | {
@@ -112,16 +87,6 @@ function withWorkflowAccess<T extends object>(
     allow_edit: access.allowEdit,
     is_owner: access.isOwner,
     shared_by_name: access.sharedByName ?? null,
-  };
-}
-
-function withOpenSourceSubmission<T extends object>(
-  workflow: T,
-  submission: OpenSourceSubmissionSummary | null,
-) {
-  return {
-    ...workflow,
-    open_source_submission: submission,
   };
 }
 
@@ -241,67 +206,6 @@ async function resolveWorkflowAccess(
   if (!share) return null;
 
   return { workflow: workflowRecord, allowEdit: !!share.allow_edit, isOwner: false };
-}
-
-function toOpenSourceSubmissionSummary(
-  row: OpenSourceSubmissionRow,
-): OpenSourceSubmissionSummary {
-  return {
-    id: row.id,
-    status: row.status,
-    submitted_at: row.submitted_at,
-    updated_at: row.updated_at,
-    reviewed_at: row.reviewed_at ?? null,
-  };
-}
-
-async function getLatestOpenSourceSubmission(
-  db: Db,
-  workflowId: string,
-  userId: string,
-): Promise<OpenSourceSubmissionSummary | null> {
-  const { data, error } = await db
-    .from("workflow_open_source_submissions")
-    .select("id, status, submitted_at, updated_at, reviewed_at")
-    .eq("workflow_id", workflowId)
-    .eq("submitted_by_user_id", userId)
-    .order("submitted_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) throw error;
-  return data ? toOpenSourceSubmissionSummary(data as OpenSourceSubmissionRow) : null;
-}
-
-function buildOpenSourceSnapshot(
-  workflow: WorkflowRecord,
-  contributors: WorkflowContributor[],
-  contributorMode: "named" | "anonymous",
-) {
-  return {
-    workflow_id: workflow.id,
-    metadata: {
-      ...metadataFromWorkflowRecord(workflow),
-      contributors,
-    },
-    skill_md: workflow.prompt_md ?? null,
-    columns_config: workflow.columns_config ?? null,
-    contributor_mode: contributorMode,
-    created_at: workflow.created_at ?? null,
-  };
-}
-
-function validateOpenSourceWorkflow(workflow: WorkflowRecord): string | null {
-  if (workflow.type === "assistant") {
-    return typeof workflow.prompt_md === "string" && workflow.prompt_md.trim()
-      ? null
-      : "Assistant workflows need instructions before they can be opened source.";
-  }
-  if (workflow.type === "tabular") {
-    return Array.isArray(workflow.columns_config) && workflow.columns_config.length > 0
-      ? null
-      : "Tabular workflows need at least one column before they can be opened source.";
-  }
-  return "Workflow type must be 'assistant' or 'tabular'.";
 }
 
 // GET /workflows
@@ -514,133 +418,6 @@ workflowsRouter.delete("/hidden/:workflowId", requireAuth, asyncRoute(async (req
   res.status(204).send();
 }));
 
-// POST /workflows/:workflowId/open-source
-workflowsRouter.post("/:workflowId/open-source", requireAuth, asyncRoute(async (req, res) => {
-  if (!WORKFLOW_CONTRIBUTIONS_ENABLED) {
-    return void res.status(404).json({ detail: "Workflow contributions are disabled" });
-  }
-
-  const userId = res.locals.userId as string;
-  const userEmail = res.locals.userEmail as string | undefined;
-  const { workflowId } = req.params;
-  const openSourceBody = req.body as {
-    contributor_mode?: unknown;
-    contributor?: unknown;
-  };
-  const requestedContributorMode =
-    openSourceBody.contributor_mode === "named"
-      ? "named"
-      : "anonymous";
-  const db = createServerSupabase();
-
-  const { data: workflow, error: workflowError } = await db
-    .from("workflows")
-    .select("*")
-    .eq("id", workflowId)
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (workflowError) {
-    return void res.status(500).json({ detail: workflowError.message });
-  }
-  if (!workflow) {
-    return void res
-      .status(404)
-      .json({ detail: "Workflow not found or not open-sourceable" });
-  }
-
-  const workflowRecord = workflow as WorkflowRecord;
-  const validationError = validateOpenSourceWorkflow(workflowRecord);
-  if (validationError) {
-    return void res.status(400).json({ detail: validationError });
-  }
-
-  const { data: profile } = await db
-    .from("user_profiles")
-    .select("display_name")
-    .eq("user_id", userId)
-    .maybeSingle();
-  const submitterName =
-    typeof profile?.display_name === "string" && profile.display_name.trim()
-      ? profile.display_name.trim()
-      : null;
-  const submittedContributor =
-    normalizeContributors([openSourceBody.contributor])?.[0] ??
-    contributorFromName(submitterName || userEmail);
-  const publicContributors =
-    requestedContributorMode === "named"
-      ? [submittedContributor]
-      : [DEFAULT_WORKFLOW_CONTRIBUTOR];
-  const now = new Date().toISOString();
-  const snapshot = buildOpenSourceSnapshot(
-    workflowRecord,
-    publicContributors,
-    requestedContributorMode,
-  );
-
-  const { data: pendingSubmission, error: pendingError } = await db
-    .from("workflow_open_source_submissions")
-    .select("*")
-    .eq("workflow_id", workflowId)
-    .eq("submitted_by_user_id", userId)
-    .eq("status", "pending")
-    .maybeSingle();
-  if (pendingError) {
-    return void res.status(500).json({ detail: pendingError.message });
-  }
-
-  if (pendingSubmission) {
-    const { data: updated, error: updateError } = await db
-      .from("workflow_open_source_submissions")
-      .update({
-        submitter_email: userEmail ?? null,
-        submitter_name:
-          requestedContributorMode === "named" ? submitterName : null,
-        contributor_mode: requestedContributorMode,
-        snapshot,
-        updated_at: now,
-      })
-      .eq("id", pendingSubmission.id)
-      .select("id, status, submitted_at, updated_at, reviewed_at")
-      .single();
-    if (updateError || !updated) {
-      return void res.status(500).json({
-        detail: updateError?.message ?? "Failed to update submission",
-      });
-    }
-    return void res.json({
-      ...toOpenSourceSubmissionSummary(updated as OpenSourceSubmissionRow),
-      mode: "updated",
-    });
-  }
-
-  const { data: created, error: createError } = await db
-    .from("workflow_open_source_submissions")
-    .insert({
-      workflow_id: workflowId,
-      submitted_by_user_id: userId,
-      submitter_email: userEmail ?? null,
-      submitter_name:
-        requestedContributorMode === "named" ? submitterName : null,
-      contributor_mode: requestedContributorMode,
-      status: "pending",
-      snapshot,
-      submitted_at: now,
-      updated_at: now,
-    })
-    .select("id, status, submitted_at, updated_at, reviewed_at")
-    .single();
-  if (createError || !created) {
-    return void res.status(500).json({
-      detail: createError?.message ?? "Failed to create submission",
-    });
-  }
-
-  res.status(201).json({
-    ...toOpenSourceSubmissionSummary(created as OpenSourceSubmissionRow),
-    mode: "created",
-  });
-}));
-
 // GET /workflows/:workflowId
 workflowsRouter.get("/:workflowId", requireAuth, asyncRoute(async (req, res) => {
   const userId = res.locals.userId as string;
@@ -657,17 +434,11 @@ workflowsRouter.get("/:workflowId", requireAuth, asyncRoute(async (req, res) => 
   const access = await resolveWorkflowAccess(workflowId, userId, userEmail, db);
   if (!access)
     return void res.status(404).json({ detail: "Workflow not found" });
-  const openSourceSubmission = access.isOwner
-    ? await getLatestOpenSourceSubmission(db, workflowId, userId)
-    : null;
   res.json(
-    withOpenSourceSubmission(
-      withWorkflowAccess(withDatabaseWorkflow(access.workflow), {
-        allowEdit: access.allowEdit,
-        isOwner: access.isOwner,
-      }),
-      openSourceSubmission,
-    ),
+    withWorkflowAccess(withDatabaseWorkflow(access.workflow), {
+      allowEdit: access.allowEdit,
+      isOwner: access.isOwner,
+    }),
   );
 }));
 

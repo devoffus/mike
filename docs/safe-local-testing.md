@@ -1,8 +1,7 @@
 # Safe Local Testing
 
-Courier is a young open-source legal AI project. Until you have reviewed your
-deployment and data flows, test it with disposable infrastructure and synthetic
-documents only.
+Courier is a legal AI platform. Until you have reviewed your deployment and data
+flows, test it with disposable infrastructure and synthetic documents only.
 
 ## Use Disposable Test Resources
 

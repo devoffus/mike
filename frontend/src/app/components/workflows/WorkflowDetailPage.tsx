@@ -7,7 +7,6 @@ import {
     Check,
     ChevronDown,
     Download,
-    Globe,
     Pencil,
     Play,
     Plus,
@@ -44,7 +43,6 @@ import {
     type HeaderActionsMenuItem,
 } from "@/app/components/shared/HeaderActionsMenu";
 import { PeopleModal } from "@/app/components/modals/PeopleModal";
-import { OpenSourceWorkflowModal } from "@/app/components/workflows/OpenSourceWorkflowModal";
 import { PageHeader } from "@/app/components/shared/PageHeader";
 import { PillButton } from "@/app/components/ui/pill-button";
 import { TabPillButton } from "@/app/components/ui/tab-pill-button";
@@ -88,8 +86,6 @@ type DeleteStatus = "idle" | "loading" | "complete";
 type WorkflowShare = Awaited<ReturnType<typeof listWorkflowShares>>[number];
 
 const NAME_COL_W = "w-[332px] shrink-0";
-const WORKFLOW_CONTRIBUTIONS_ENABLED =
-    process.env.NEXT_PUBLIC_WORKFLOW_CONTRIBUTIONS_ENABLED === "true";
 
 // ---------------------------------------------------------------------------
 // Page
@@ -106,10 +102,6 @@ export function WorkflowDetailPage({ id, workflowType }: Props) {
         (workflow?.is_system ?? false) ||
         workflow?.allow_edit === false;
     const canShare = !readOnly && (workflow?.is_owner ?? true);
-    const canOpenSource =
-        WORKFLOW_CONTRIBUTIONS_ENABLED &&
-        canShare &&
-        workflow?.is_system !== true;
 
     // Editor state
     const [promptMd, setPromptMd] = useState("");
@@ -137,7 +129,6 @@ export function WorkflowDetailPage({ id, workflowType }: Props) {
     const [useOpen, setUseOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deleteStatus, setDeleteStatus] = useState<DeleteStatus>("idle");
-    const [openSourceOpen, setOpenSourceOpen] = useState(false);
 
     // Column actions dropdown
     const [colActionsOpen, setColActionsOpen] = useState(false);
@@ -298,13 +289,9 @@ export function WorkflowDetailPage({ id, workflowType }: Props) {
         setSaveStatus("saving");
         try {
             const updated = await updateWorkflow(id, { columns_config: next });
-            setWorkflow((current) => ({
-                ...updated,
-                open_source_submission:
-                    updated.open_source_submission ??
-                    current?.open_source_submission ??
-                    null,
-            }));
+            setWorkflow((current) =>
+                current ? { ...current, ...updated } : updated,
+            );
             setSaveStatus("saved");
             setTimeout(() => setSaveStatus("idle"), 2000);
         } catch {
@@ -377,10 +364,6 @@ export function WorkflowDetailPage({ id, workflowType }: Props) {
         );
     }
 
-    const defaultContributorName =
-        profile?.displayName?.trim() || user?.email || "your account name";
-    const openSourcePending =
-        workflow.open_source_submission?.status === "pending";
     const workflowActionItems: HeaderActionsMenuItem[] = [
         {
             label: "Download workflow",
@@ -395,14 +378,6 @@ export function WorkflowDetailPage({ id, workflowType }: Props) {
     ];
 
     if (!readOnly) {
-        if (canOpenSource) {
-            workflowActionItems.push({
-                label: "Open source this",
-                icon: Globe,
-                onSelect: () => setOpenSourceOpen(true),
-            });
-        }
-
         workflowActionItems.push({
             label: "Delete",
             icon: Trash2,
@@ -502,10 +477,6 @@ export function WorkflowDetailPage({ id, workflowType }: Props) {
                                       updated.shared_by_name ??
                                       current.shared_by_name ??
                                       null,
-                                  open_source_submission:
-                                      updated.open_source_submission ??
-                                      current.open_source_submission ??
-                                      null,
                               }
                             : updated,
                     );
@@ -540,24 +511,6 @@ export function WorkflowDetailPage({ id, workflowType }: Props) {
                     setDeleteStatus("idle");
                 }}
             />
-            <OpenSourceWorkflowModal
-                open={openSourceOpen}
-                onClose={() => setOpenSourceOpen(false)}
-                workflowId={id}
-                defaultContributorName={defaultContributorName}
-                pending={openSourcePending}
-                onSubmitted={(submission) =>
-                    setWorkflow((current) =>
-                        current
-                            ? {
-                                  ...current,
-                                  open_source_submission: submission,
-                              }
-                            : current,
-                    )
-                }
-            />
-
             {/* Body */}
             <div className="flex-1 min-h-0 flex flex-col">
                 {workflow.metadata.type === "assistant" ? (

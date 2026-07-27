@@ -582,21 +582,6 @@ export interface TabularCell {
 
 // Workflows
 
-export interface WorkflowOpenSourceSubmission {
-  id: string;
-  status: "pending" | "approved" | "rejected";
-  submitted_at: string;
-  updated_at: string;
-  reviewed_at?: string | null;
-}
-
-export interface OpenSourceWorkflowResponse
-  extends WorkflowOpenSourceSubmission {
-  mode: "created" | "updated";
-}
-
-export type OpenSourceWorkflowContributorMode = "named" | "anonymous";
-
 export interface WorkflowContributor {
   name: string;
   organisation: string | null;
@@ -624,7 +609,6 @@ export interface Workflow {
   shared_by_name?: string | null;
   allow_edit?: boolean;
   is_owner?: boolean;
-  open_source_submission?: WorkflowOpenSourceSubmission | null;
 }
 
 // API helpers

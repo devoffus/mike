@@ -16,9 +16,8 @@ and on manual `workflow_dispatch`, the `e2e / playwright` job:
 3. boots **local Supabase** (Auth + Postgres) via the Supabase CLI, loads
    `backend/schema.sql`, then applies every dated migration in `backend/migrations/`
    on top. `schema.sql` is meant to be the latest shape but in practice lags the
-   migrations (e.g. it is missing `workflow_open_source_submissions`, which
-   `GET /workflows/:id` queries — a 500 without the migrations). After the
-   migrations it re-grants `service_role` the same narrowed data privileges
+   migrations; without the migrations the workflow specs and others return 500s.
+   After the migrations it re-grants `service_role` the same narrowed data privileges
    `schema.sql` grants (`SELECT/INSERT/UPDATE/DELETE` on tables, `USAGE/SELECT`
    on sequences): the schema's own `GRANT ... ON ALL` statements only cover
    tables that existed when the schema loaded, not ones the migrations create;

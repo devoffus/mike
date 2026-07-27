@@ -13,11 +13,8 @@ import type {
     Folder,
     LibraryFolder,
     Message,
-    OpenSourceWorkflowContributorMode,
-    OpenSourceWorkflowResponse,
     Project,
     Workflow,
-    WorkflowContributor,
     TabularReview,
     TabularReviewDetailOut,
 } from "@/app/components/shared/types";
@@ -1348,23 +1345,6 @@ export async function updateWorkflow(
 
 export async function deleteWorkflow(workflowId: string): Promise<void> {
     await apiRequest(`/workflows/${workflowId}`, { method: "DELETE" });
-}
-
-export async function openSourceWorkflow(
-    workflowId: string,
-    payload: {
-        contributor_mode: OpenSourceWorkflowContributorMode;
-        contributor?: WorkflowContributor | null;
-    },
-): Promise<OpenSourceWorkflowResponse> {
-    return apiRequest<OpenSourceWorkflowResponse>(
-        `/workflows/${workflowId}/open-source`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        },
-    );
 }
 
 export async function listHiddenWorkflows(): Promise<string[]> {

@@ -123,15 +123,11 @@ export function buildCitationAppendix(citations: Citation[]) {
 export function CitationsBlock({
     citations,
     onCitationClick,
-    onOpenSource,
-    canOpenSource,
     showWhenEmpty = false,
     isLoading = false,
 }: {
     citations: Citation[];
     onCitationClick?: (citation: Citation) => void;
-    onOpenSource?: (citation: Citation) => void;
-    canOpenSource?: (citation: Citation) => boolean;
     showWhenEmpty?: boolean;
     isLoading?: boolean;
 }) {
@@ -151,27 +147,19 @@ export function CitationsBlock({
                 </div>
                 <div>
                     {rows.map((row) => {
-                        const sourceIsClickable =
-                            !!onOpenSource &&
-                            (canOpenSource?.(row.source) ?? true);
                         return (
                             <div
                                 key={row.key}
                                 className="flex items-center gap-3 px-3 py-3"
                             >
-                                <button
-                                    type="button"
-                                    onClick={() => onOpenSource?.(row.source)}
-                                    disabled={!sourceIsClickable}
-                                    className="flex min-w-0 flex-1 items-center gap-2 rounded-lg text-left text-sm font-serif text-gray-700 transition-colors enabled:hover:text-gray-950 disabled:cursor-default"
-                                >
+                                <div className="flex min-w-0 flex-1 items-center gap-2 text-sm font-serif text-gray-700">
                                     <CitationSourceIcon
                                         annotation={row.source}
                                     />
                                     <span className="truncate">
                                         {row.label}
                                     </span>
-                                </button>
+                                </div>
                                 <div className="flex shrink-0 flex-wrap justify-end gap-1">
                                     {row.entries.map(
                                         ({ annotation, index }) => (

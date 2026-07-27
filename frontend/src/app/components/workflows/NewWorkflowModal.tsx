@@ -176,15 +176,6 @@ function getWorkflowSourceLabel(workflow: Workflow) {
     return "User";
 }
 
-const OPEN_SOURCE_STATUS_LABELS: Record<
-    NonNullable<Workflow["open_source_submission"]>["status"],
-    string
-> = {
-    pending: "Pending review",
-    approved: "Approved",
-    rejected: "Rejected",
-};
-
 export function NewWorkflowModal({
     open,
     onClose,
@@ -240,17 +231,7 @@ export function NewWorkflowModal({
                         },
                     ]
                   : []),
-              ...(editWorkflow.open_source_submission
-                  ? [
-                        {
-                            label: "Open source",
-                            value:
-                                OPEN_SOURCE_STATUS_LABELS[
-                                    editWorkflow.open_source_submission.status
-                                ],
-                        },
-                    ]
-                  : []),
+
           ]
         : [];
     const isOtherLanguage = language === "Other";

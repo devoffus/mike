@@ -121,8 +121,8 @@ jobs:
           DB_URL=$(supabase status -o json | jq -r '.DB_URL')
           # 1) Base schema. README: "For a new Supabase database ... run
           # backend/schema.sql". It is meant to be the latest shape but in practice
-          # lags the migrations (e.g. it is missing workflow_open_source_submissions,
-          # which GET /workflows/:id queries — a 500 that breaks the workflow specs).
+          # lags the migrations; without the migrations the workflow and other
+          # specs return 500.
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f backend/schema.sql
           # 2) Apply every dated migration on top. They are written to be safe to
           # re-run (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS), so the ones already

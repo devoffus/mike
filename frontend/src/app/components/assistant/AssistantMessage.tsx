@@ -236,22 +236,6 @@ export function AssistantMessage({
             );
         }
     }
-    const handleOpenCitationSource = (citation: Citation) => {
-        if (onOpenCitationSource) {
-            onOpenCitationSource(citation);
-            return;
-        }
-        if (citation.kind === "case" || !onOpenDocument) return;
-        onOpenDocument({
-            documentId: citation.document_id,
-            filename: citation.filename,
-            versionId: citation.version_id ?? null,
-            versionNumber: citation.version_number ?? null,
-        });
-    };
-    const canOpenCitationSource = (citation: Citation) =>
-        !!onOpenCitationSource ||
-        (citation.kind !== "case" && !!onOpenDocument);
     const showCitationBlock =
         !!citationStatus || (!isStreaming && citations.length > 0);
     const handleCopy = async () => {
@@ -1013,8 +997,6 @@ export function AssistantMessage({
                     <CitationsBlock
                         citations={citations}
                         onCitationClick={onCitationClick}
-                        onOpenSource={handleOpenCitationSource}
-                        canOpenSource={canOpenCitationSource}
                         showWhenEmpty={!!citationStatus}
                         isLoading={
                             citationStatus === "started" ||
