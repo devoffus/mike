@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { MikeIcon } from "@/app/components/chat/mike-icon";
+import { CourierIcon } from "@/app/components/chat/courier-icon";
 
 export type StatusState = "active" | "error" | null;
 
@@ -41,11 +41,11 @@ export function ResponseStatus({ status }: { status: StatusState }) {
 
     return (
         <div className="w-full h-9 flex items-center mb-2">
-            <MikeIcon
+            <CourierIcon
                 spin={isActive}
                 done={showDone && doneVisible}
                 error={isError}
-                mike={!isError && !(showDone && doneVisible)}
+                courier={!isError && !(showDone && doneVisible)}
                 size={22}
             />
         </div>

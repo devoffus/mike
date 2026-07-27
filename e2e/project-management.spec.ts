@@ -292,7 +292,7 @@ test("file upload type validation — .txt file is rejected", async ({ page }) =
         }
     });
     expect(accessToken, "expected a Supabase session in localStorage").toBeTruthy();
-    const apiBase = process.env.MIKE_API_BASE_URL ?? "http://localhost:3001";
+    const apiBase = process.env.COURIER_API_BASE_URL ?? "http://localhost:3001";
     const uploadResponse = await page.request.post(
         `${apiBase}/projects/${projectId}/documents`,
         {

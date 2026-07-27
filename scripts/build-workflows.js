@@ -5,7 +5,7 @@ const path = require("path");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const WORKSPACE_DIR = path.resolve(ROOT_DIR, "..");
-const WORKFLOWS_DIR = path.join(WORKSPACE_DIR, "mike-workflows");
+const WORKFLOWS_DIR = path.join(WORKSPACE_DIR, "courier-workflows");
 const WORKFLOW_COLLECTIONS = [
   { directory: "assistant-workflows", type: "assistant" },
   { directory: "tabular-review-workflows", type: "tabular" },
@@ -350,20 +350,20 @@ function readWorkflow(category, workflowDir) {
   assertString(metadata.author, `${label}.metadata.author`);
   assertString(metadata.language, `${label}.language`);
   assertString(metadata.version, `${label}.version`);
-  assertString(metadata["mike-display-name"], `${label}.metadata.mike-display-name`);
-  if (metadata["mike-type"] !== category) {
-    fail(`${label}.metadata.mike-type must be "${category}"`);
+  assertString(metadata["courier-display-name"], `${label}.metadata.courier-display-name`);
+  if (metadata["courier-type"] !== category) {
+    fail(`${label}.metadata.courier-type must be "${category}"`);
   }
-  if (!["system", "add-on"].includes(metadata["mike-availability"])) {
-    fail(`${label}.metadata.mike-availability must be "system" or "add-on"`);
+  if (!["system", "add-on"].includes(metadata["courier-availability"])) {
+    fail(`${label}.metadata.courier-availability must be "system" or "add-on"`);
   }
   assertString(metadata.practice, `${label}.metadata.practice`);
   assertString(metadata.jurisdictions, `${label}.metadata.jurisdictions`);
 
   const normalizedMetadata = {
-    title: metadata["mike-display-name"],
+    title: metadata["courier-display-name"],
     description: frontmatter.description,
-    type: metadata["mike-type"],
+    type: metadata["courier-type"],
     contributors: [
       {
         name: metadata.author.trim(),
@@ -391,7 +391,7 @@ function readWorkflow(category, workflowDir) {
     }
     return {
       id,
-      availability: metadata["mike-availability"],
+      availability: metadata["courier-availability"],
       metadata: normalizedMetadata,
       skill_md: skillMd,
       source_skill_md: sourceSkillMd,
@@ -417,7 +417,7 @@ function readWorkflow(category, workflowDir) {
 
   return {
     id,
-    availability: metadata["mike-availability"],
+    availability: metadata["courier-availability"],
     metadata: normalizedMetadata,
     skill_md: skillMd || null,
     source_skill_md: sourceSkillMd,

@@ -31,8 +31,8 @@ export const DEFAULT_QUICK_ACTIONS: Record<QuickActionId, boolean> = {
     newTabularReview: false,
 };
 
-const QUICK_ACTIONS_STORAGE_KEY = "mike.quickActions.visible";
-const QUICK_ACTIONS_UPDATED_EVENT = "mike:quick-actions-updated";
+const QUICK_ACTIONS_STORAGE_KEY = "courier.quickActions.visible";
+const QUICK_ACTIONS_UPDATED_EVENT = "courier:quick-actions-updated";
 let cachedRawPreference: string | null | undefined;
 let cachedPreference: Record<QuickActionId, boolean> = DEFAULT_QUICK_ACTIONS;
 

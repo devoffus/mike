@@ -216,7 +216,7 @@ describe("projects.routes", () => {
             });
         });
 
-        it("returns 400 when a shared_with recipient is not a Mike user", async () => {
+        it("returns 400 when a shared_with recipient is not a Courier user", async () => {
             // No user_profiles rows seeded → findMissingUserEmails reports the
             // recipient as unknown and the create is rejected before insert.
             const res = await request(app)
@@ -226,7 +226,7 @@ describe("projects.routes", () => {
 
             expect(res.status).toBe(400);
             expect(res.body.detail).toBe(
-                "ghost@x.com does not belong to a Mike user.",
+                "ghost@x.com does not belong to a Courier user.",
             );
             expect(
                 supabaseState.inserts.find((i) => i.table === "projects"),

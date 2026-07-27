@@ -37,7 +37,7 @@ import { cn } from "@/app/lib/utils";
 import {
     uploadProjectDocument,
     uploadStandaloneDocument,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import {
     formatUnsupportedDocumentWarning,
     partitionSupportedDocumentFiles,

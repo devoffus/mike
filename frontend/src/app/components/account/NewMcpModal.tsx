@@ -3,7 +3,7 @@
 import { Check, ChevronDown, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import { Modal } from "@/app/components/modals/Modal";
-import type { McpConnectorSummary } from "@/app/lib/mikeApi";
+import type { McpConnectorSummary } from "@/app/lib/courierApi";
 import {
     accountGlassIconButtonClassName,
     accountGlassInputClassName,

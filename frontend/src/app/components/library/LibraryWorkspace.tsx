@@ -28,7 +28,7 @@ import {
     renameLibraryFolder,
     uploadLibraryDocument,
     type LibraryKind,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import type { Document } from "@/app/components/shared/types";
 
 type LibraryViewCollection = {

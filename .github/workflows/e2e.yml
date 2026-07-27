@@ -17,7 +17,7 @@
 # always take the skip path), cost, and how to verify the specs ran are in
 # docs/e2e-ci.md ("Enable the LLM specs").
 #
-# The e2e user (e2e@mike.local) is bootstrapped in-job by e2e/auth.setup.ts against
+# The e2e user (e2e@courier.local) is bootstrapped in-job by e2e/auth.setup.ts against
 # the local Supabase admin API, so no E2E_PASSWORD secret is needed — the defaults
 # baked into auth.setup.ts are the single source of truth.
 name: e2e
@@ -99,11 +99,11 @@ jobs:
           AWS_ACCESS_KEY_ID=minioadmin \
           AWS_SECRET_ACCESS_KEY=minioadmin \
           AWS_DEFAULT_REGION=us-east-1 \
-            aws --endpoint-url http://localhost:9000 s3 mb s3://mike
+            aws --endpoint-url http://localhost:9000 s3 mb s3://courier
           AWS_ACCESS_KEY_ID=minioadmin \
           AWS_SECRET_ACCESS_KEY=minioadmin \
           AWS_DEFAULT_REGION=us-east-1 \
-            aws --endpoint-url http://localhost:9000 s3 ls s3://mike
+            aws --endpoint-url http://localhost:9000 s3 ls s3://courier
 
       # Supabase (Auth + Postgres). This layout ships no supabase/ config dir
       # (the app targets a hosted Supabase project), so we scaffold one with
@@ -181,7 +181,7 @@ jobs:
             echo "R2_ENDPOINT_URL=http://localhost:9000"
             echo "R2_ACCESS_KEY_ID=minioadmin"
             echo "R2_SECRET_ACCESS_KEY=minioadmin"
-            echo "R2_BUCKET_NAME=mike"
+            echo "R2_BUCKET_NAME=courier"
             echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}"
           } >> backend/.env
           # next build inlines NEXT_PUBLIC_* at build time, so these must be set

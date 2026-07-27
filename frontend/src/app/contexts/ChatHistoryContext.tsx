@@ -15,7 +15,7 @@ import {
     deleteChat,
     listChats,
     renameChat,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import type { Chat, Message } from "@/app/components/shared/types";
 
 interface ChatHistoryContextType {

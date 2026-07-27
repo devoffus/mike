@@ -31,7 +31,7 @@ and on manual `workflow_dispatch`, the `e2e / playwright` job:
 6. runs `npx playwright test` and uploads the HTML report + traces as an artifact
    (`playwright-report`) on pass, fail, or timeout.
 
-`e2e/auth.setup.ts` bootstraps the shared test user (`e2e@mike.local`) against
+`e2e/auth.setup.ts` bootstraps the shared test user (`e2e@courier.local`) against
 the local Supabase admin API, so no login secret is needed — the credentials
 baked into that file are the single source of truth.
 
@@ -71,7 +71,7 @@ UI path:
 CLI equivalent (repo admin):
 
 ```bash
-gh secret set ANTHROPIC_API_KEY --repo Open-Legal-Products/mike
+gh secret set ANTHROPIC_API_KEY --repo Open-Legal-Products/courier
 # paste the key at the prompt (or pipe it: --body "$ANTHROPIC_API_KEY")
 ```
 
@@ -111,7 +111,7 @@ The uploaded `playwright-report` artifact shows the same per-spec statuses.
 
 Earlier revisions of the four specs drove the model picker to a keyless
 **"Demo (no key needed)"** entry that exists in the amal66 fork but **not in
-this repository** (no `mike-demo` model id, no demo provider), so setting the
+this repository** (no `courier-demo` model id, no demo provider), so setting the
 secret unskipped them and they then failed at model selection. This branch
 carries the fix (commit `test(e2e): select a real Claude model in LLM-gated
 specs`): the specs' `selectClaudeModel` helper picks **Claude Sonnet 4.6** in

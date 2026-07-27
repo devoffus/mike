@@ -1,7 +1,7 @@
 /**
  * E2E tests for Workflows and Account Settings features.
  *
- * Test user: e2e@mike.local / E2eTestPass1! (session loaded from e2e/.auth/user.json)
+ * Test user: e2e@courier.local / E2eTestPass1! (session loaded from e2e/.auth/user.json)
  *
  * Key source facts used by these selectors:
  *  - WorkflowList.tsx: h1 "Workflows"; Plus icon button (no aria-label) opens NewWorkflowModal
@@ -224,7 +224,7 @@ test.describe("Account Settings", () => {
         // value rather than page text.
         // REGRESSION: fails if user auth context is not propagated to the account page
         await expect(page.getByPlaceholder("Enter your email")).toHaveValue(
-            "e2e@mike.local",
+            "e2e@courier.local",
             { timeout: 10_000 },
         );
     });

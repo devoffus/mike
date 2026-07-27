@@ -6,13 +6,13 @@ import { useRouter } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useUserProfile } from "@/app/contexts/UserProfileContext";
-import { MikeIcon } from "@/app/components/chat/mike-icon";
+import { CourierIcon } from "@/app/components/chat/courier-icon";
 import { ChatInput, type ChatInputHandle } from "./ChatInput";
 import { SelectAssistantProjectModal } from "./SelectAssistantProjectModal";
 import { QuickActionsModal } from "./QuickActionsModal";
 import { NewProjectModal } from "../projects/NewProjectModal";
 import { NewTRModal } from "../tabular/NewTRModal";
-import { createTabularReview } from "@/app/lib/mikeApi";
+import { createTabularReview } from "@/app/lib/courierApi";
 import { useDirectoryData, type DirectoryTab } from "../shared/useDirectoryData";
 import {
     QUICK_ACTIONS,
@@ -158,7 +158,7 @@ export function InitialView({ onSubmit }: InitialViewProps) {
                                 "transform 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
                         }}
                     >
-                        <MikeIcon size={ICON_SIZE} />
+                        <CourierIcon size={ICON_SIZE} />
                     </div>
                     <h1
                         ref={textRef}

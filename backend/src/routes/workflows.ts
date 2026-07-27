@@ -76,7 +76,7 @@ type OpenSourceSubmissionSummary = Pick<
 };
 
 const DEFAULT_WORKFLOW_CONTRIBUTOR: WorkflowContributor = {
-  name: "Mike",
+  name: "Courier",
   organisation: null,
   role: null,
   linkedin: null,
@@ -742,7 +742,7 @@ workflowsRouter.post("/:workflowId/share", requireAuth, asyncRoute(async (req, r
   const missingSharedUsers = await findMissingUserEmails(db, normalizedEmails);
   if (missingSharedUsers.length > 0) {
     return void res.status(400).json({
-      detail: `${missingSharedUsers[0]} does not belong to a Mike user.`,
+      detail: `${missingSharedUsers[0]} does not belong to a Courier user.`,
     });
   }
 

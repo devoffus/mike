@@ -29,7 +29,7 @@ import {
     streamTabularGeneration,
     updateTabularReview,
     uploadReviewDocument,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import type {
     ColumnConfig,
     Document,

@@ -6,7 +6,7 @@ import {
     uploadStandaloneDocument,
     uploadProjectDocument,
     addDocumentToProject,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import type { Document } from "../shared/types";
 import { FileDirectory } from "../shared/FileDirectory";
 import type { DirectoryTab } from "../shared/useDirectoryData";

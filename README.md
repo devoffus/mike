@@ -1,24 +1,24 @@
-# Mike
+# Courier
 
-![Mike](https://mikeoss.com/link-image.jpg)
+![Courier](https://courier.com/link-image.jpg)
 
-Mike or MIkeOSS is a legal AI platform that is able to assist you with document review, drafting and legal research.
+Courier is a legal AI platform that is able to assist you with document review, drafting and legal research.
 
 It has a Next.js frontend, an Express backend, Supabase Auth/Postgres, and Cloudflare R2-compatible object storage.
 
-Website: [mikeoss.com](https://mikeoss.com)
+Website: [courier.com](https://courier.com)
 
 ## Contents
 
 - `frontend/` - Next.js application
 - `backend/` - Express API, Supabase access, document processing, and database schema
 - `backend/schema.sql` - Supabase schema for fresh databases
-- `backend/migrations/` - dated, incremental schema migrations; on an existing database, apply the files dated after the Mike version you deployed
+- `backend/migrations/` - dated, incremental schema migrations; on an existing database, apply the files dated after the Courier version you deployed
 
 ## System Workflows
 
-Mike's system assistant and tabular review workflows are maintained in the
-[`Open-Legal-Products/mike-workflows`](https://github.com/Open-Legal-Products/mike-workflows)
+Courier's system assistant and tabular review workflows are maintained in the
+[`Open-Legal-Products/courier-workflows`](https://github.com/Open-Legal-Products/courier-workflows)
 repository.
 
 ## Prerequisites
@@ -43,7 +43,7 @@ For a new Supabase database, open the Supabase SQL editor and run:
 
 The schema file is for fresh deployments and already includes the latest database shape.
 
-For an existing database, do not run the full schema file over production data. Instead, apply the incremental files in `backend/migrations/`: run the migrations dated **after** the version of Mike you currently have deployed, in filename order. Each file is named `YYYYMMDD_<name>.sql` (the date is also recorded in a comment at the top of the file) and is written to be safe to re-run, so when unsure you can re-apply the most recent migrations without harm.
+For an existing database, do not run the full schema file over production data. Instead, apply the incremental files in `backend/migrations/`: run the migrations dated **after** the version of Courier you currently have deployed, in filename order. Each file is named `YYYYMMDD_<name>.sql` (the date is also recorded in a comment at the top of the file) and is written to be safe to re-run, so when unsure you can re-apply the most recent migrations without harm.
 
 ## Environment
 
@@ -66,7 +66,7 @@ SUPABASE_SECRET_KEY=your-supabase-service-role-key
 R2_ENDPOINT_URL=https://your-account-id.r2.cloudflarestorage.com
 R2_ACCESS_KEY_ID=your-r2-access-key
 R2_SECRET_ACCESS_KEY=your-r2-secret-key
-R2_BUCKET_NAME=mike
+R2_BUCKET_NAME=courier
 
 GEMINI_API_KEY=your-gemini-key
 ANTHROPIC_API_KEY=your-anthropic-key
@@ -95,13 +95,13 @@ Provider keys are only needed for the models, legal research, and email features
 
 ## CourtListener Integration
 
-Mike can use CourtListener for US case law citation verification, case fetching, targeted opinion search, and case-law panels in assistant responses.
+Courier can use CourtListener for US case law citation verification, case fetching, targeted opinion search, and case-law panels in assistant responses.
 
 To enable live CourtListener access, set `COURTLISTENER_API_TOKEN` in `backend/.env` and restart the backend. Users can also add their own CourtListener token from **Account > Models & API Keys** when the instance does not provide one globally.
 
 Fresh databases created from `backend/schema.sql` already include the CourtListener support tables. Existing deployments should apply the matching dated migration in `backend/migrations/` before enabling the feature.
 
-Bulk data is optional. When `COURTLISTENER_BULK_DATA_ENABLED=true`, Mike first tries local Supabase/R2 data before falling back to CourtListener's API:
+Bulk data is optional. When `COURTLISTENER_BULK_DATA_ENABLED=true`, Courier first tries local Supabase/R2 data before falling back to CourtListener's API:
 
 - citation metadata is read from `public.courtlistener_citation_index`
 - case cluster metadata is read from `public.courtlistener_opinion_cluster_index`
@@ -143,13 +143,13 @@ Open `http://localhost:3000`.
 
 ## Troubleshooting
 
-**Sign-up confirmation email never arrives.** Confirmation emails are sent by Supabase Auth, not by Mike. For local development, the simplest fix is to disable email confirmation in **Supabase > Authentication > Providers > Email**. For production, configure custom SMTP in Supabase; the built-in mailer is heavily rate-limited and may be restricted on newer projects.
+**Sign-up confirmation email never arrives.** Confirmation emails are sent by Supabase Auth, not by Courier. For local development, the simplest fix is to disable email confirmation in **Supabase > Authentication > Providers > Email**. For production, configure custom SMTP in Supabase; the built-in mailer is heavily rate-limited and may be restricted on newer projects.
 
 **The model picker shows a missing-key warning.** Add a key for that provider in **Account > Models & API Keys**, or configure the provider key in `backend/.env` and restart the backend.
 
 **CourtListener tools say the API token is missing.** Set `COURTLISTENER_API_TOKEN` in `backend/.env`, or add a CourtListener token in **Account > Models & API Keys** for the signed-in user. Restart the backend after changing `.env`.
 
-**CourtListener bulk lookup is not returning local results.** Confirm `COURTLISTENER_BULK_DATA_ENABLED=true`, the two CourtListener tables have been populated, and opinion JSON exists in R2 under `courtlistener/opinions/by-cluster/`. If bulk data is unavailable, Mike falls back to the live API when a token is configured.
+**CourtListener bulk lookup is not returning local results.** Confirm `COURTLISTENER_BULK_DATA_ENABLED=true`, the two CourtListener tables have been populated, and opinion JSON exists in R2 under `courtlistener/opinions/by-cluster/`. If bulk data is unavailable, Courier falls back to the live API when a token is configured.
 
 **DOC or DOCX conversion fails.** Install LibreOffice locally and restart the backend so document conversion commands are available on the process path.
 

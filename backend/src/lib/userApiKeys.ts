@@ -59,7 +59,7 @@ function encryptionKey(): Buffer {
     if (!secret) {
         throw new Error("USER_API_KEYS_ENCRYPTION_SECRET is not configured");
     }
-    return crypto.scryptSync(secret, "mike-user-api-keys-v1", 32);
+    return crypto.scryptSync(secret, "courier-user-api-keys-v1", 32);
 }
 
 function encrypt(value: string): Omit<EncryptedKeyRow, "provider"> {

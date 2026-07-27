@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Check, EyeOff, User } from "lucide-react";
-import { openSourceWorkflow } from "@/app/lib/mikeApi";
+import { openSourceWorkflow } from "@/app/lib/courierApi";
 import type { WorkflowOpenSourceSubmission } from "@/app/components/shared/types";
 import { Modal } from "@/app/components/modals/Modal";
 import { ModalFieldLabel } from "@/app/components/modals/ModalFieldLabel";
@@ -13,7 +13,7 @@ type OpenSourceContributorMode = "named" | "anonymous";
 type OpenSourceStatus = "idle" | "loading" | "complete";
 
 const WORKFLOWS_REPO_URL =
-    "https://github.com/Open-Legal-Products/mike-workflows";
+    "https://github.com/Open-Legal-Products/courier-workflows";
 
 interface OpenSourceWorkflowModalProps {
     open: boolean;
@@ -182,7 +182,7 @@ export function OpenSourceWorkflowModal({
                             rel="noopener noreferrer"
                             className="font-medium text-gray-950 underline decoration-gray-300 underline-offset-4 transition-colors hover:text-gray-600"
                         >
-                            Open-Legal-Products/mike-workflows
+                            Open-Legal-Products/courier-workflows
                         </a>{" "}
                         repo. You&apos;ll be notified by email if your workflow
                         is accepted.
@@ -309,14 +309,14 @@ export function OpenSourceWorkflowModal({
                                             rel="noopener noreferrer"
                                             className="font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 transition-colors hover:text-gray-600"
                                         >
-                                            Open-Legal-Products/mike-workflows
+                                            Open-Legal-Products/courier-workflows
                                         </a>{" "}
                                         <label
                                             htmlFor="open-source-disclosure-consent"
                                             className="cursor-pointer"
                                         >
                                             GitHub repository and on the
-                                            mikeoss.com website.
+                                            courier.com website.
                                         </label>
                                     </p>
                                 </div>

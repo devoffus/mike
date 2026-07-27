@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { User, Loader2 } from "lucide-react";
-import type { ProjectPeople } from "@/app/lib/mikeApi";
+import type { ProjectPeople } from "@/app/lib/courierApi";
 import { AddUserInput } from "../shared/AddUserInput";
 import { Modal } from "./Modal";
 
@@ -47,7 +47,7 @@ type RosterRow = {
 };
 
 /**
- * Roster of every Mike member with access to the project, with controls to
+ * Roster of every Courier member with access to the project, with controls to
  * add/remove members. Mirrors AddDocumentsModal's frame.
  */
 export function PeopleModal({

@@ -6,7 +6,7 @@ import { Loader2, UserPlus } from "lucide-react";
 import {
     lookupUserByEmail,
     type UserLookupResult,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import { PillButton } from "@/app/components/ui/pill-button";
 import { cn } from "@/app/lib/utils";
 
@@ -57,7 +57,7 @@ export function AddUserInput({
 
             const user = await lookupUserByEmail(email);
             if (!user.exists) {
-                setError(`${email} does not belong to a Mike user.`);
+                setError(`${email} does not belong to a Courier user.`);
                 return;
             }
 

@@ -7,7 +7,7 @@ import {
     listProjects,
     updateProject,
     deleteProject,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import { OwnerOnlyPopup } from "@/app/components/popups/OwnerOnlyPopup";
 import { useAuth } from "@/app/contexts/AuthContext";
 import type { Project } from "@/app/components/shared/types";

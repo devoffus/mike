@@ -1,6 +1,6 @@
 # CI: build and test.
 #
-# Adapted from the amal66/mike fork's .github/workflows/ci.yml (monorepo
+# Adapted from the amal66/courier fork's .github/workflows/ci.yml (monorepo
 # layout) to this repository's backend/ + frontend/ layout. Test steps use
 # `npm test --if-present`, and the eval job checks for evals/run.mjs, so this
 # workflow is safe to merge before or after the test-harness and evals PRs:

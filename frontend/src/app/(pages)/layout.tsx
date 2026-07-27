@@ -10,7 +10,7 @@ import { PageChromeContext } from "@/app/contexts/PageChromeContext";
 import { AppSidebar } from "@/app/components/shared/AppSidebar";
 import { FullScreenLoader } from "@/app/components/shared/FullScreenLoader";
 
-export default function MikeLayout({
+export default function CourierLayout({
     children,
 }: {
     children: React.ReactNode;

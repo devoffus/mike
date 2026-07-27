@@ -11,7 +11,7 @@ import { Copy, Loader2 } from "lucide-react";
 import { supabase } from "@/app/lib/supabase";
 import { Button } from "@/app/components/ui/button";
 import { useUserProfile } from "@/app/contexts/UserProfileContext";
-import { isMfaRequiredError } from "@/app/lib/mikeApi";
+import { isMfaRequiredError } from "@/app/lib/courierApi";
 import { Modal } from "@/app/components/modals/Modal";
 import {
     MfaVerificationPopup,
@@ -253,7 +253,7 @@ export default function SecurityPage() {
 
             let { data, error } = await supabase.auth.mfa.enroll({
                 factorType: "totp",
-                friendlyName: "Mike",
+                friendlyName: "Courier",
             });
             if (error && isDuplicateFriendlyNameError(error)) {
                 traceMfa("[security/mfa] retrying enrollment with unique name", {
@@ -261,7 +261,7 @@ export default function SecurityPage() {
                 });
                 const retry = await supabase.auth.mfa.enroll({
                     factorType: "totp",
-                    friendlyName: `Mike ${Date.now()}`,
+                    friendlyName: `Courier ${Date.now()}`,
                 });
                 data = retry.data;
                 error = retry.error;

@@ -29,7 +29,7 @@ import {
     deleteDocumentVersion,
     renameDocumentVersion,
     type DocumentVersion,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import type {
     Document,
     Folder as ProjectFolder,
@@ -1032,8 +1032,8 @@ export function DocTable({
     function hasMovePayload(dt: DataTransfer): boolean {
         return Array.from(dt.types).some(
             (type) =>
-                type === "application/mike-doc" ||
-                type === "application/mike-folder",
+                type === "application/courier-doc" ||
+                type === "application/courier-folder",
         );
     }
 
@@ -1042,7 +1042,7 @@ export function DocTable({
     }
 
     function hasDocumentPayload(dt: DataTransfer): boolean {
-        return Array.from(dt.types).includes("application/mike-doc");
+        return Array.from(dt.types).includes("application/courier-doc");
     }
 
     function currentVersionNumber(doc: Document): number | null {
@@ -1254,7 +1254,7 @@ export function DocTable({
         }
         void handleDropExistingDocumentVersion(
             doc,
-            e.dataTransfer.getData("application/mike-doc"),
+            e.dataTransfer.getData("application/courier-doc"),
         );
     }
 
@@ -1263,8 +1263,8 @@ export function DocTable({
         dt: DataTransfer,
     ) {
         if (!hasMovePayload(dt)) return;
-        const docId = dt.getData("application/mike-doc");
-        const subFolderId = dt.getData("application/mike-folder");
+        const docId = dt.getData("application/courier-doc");
+        const subFolderId = dt.getData("application/courier-folder");
         if (docId) {
             const doc = documents.find((d) => d.id === docId);
             if (!doc || (doc.folder_id ?? null) === targetFolderId) return;
@@ -1458,7 +1458,7 @@ export function DocTable({
                                         return;
                                     }
                                     e.dataTransfer.setData(
-                                        "application/mike-doc",
+                                        "application/courier-doc",
                                         doc.id,
                                     );
                                     e.dataTransfer.effectAllowed = "copyMove";
@@ -1778,7 +1778,7 @@ export function DocTable({
                                         return;
                                     }
                                     e.dataTransfer.setData(
-                                        "application/mike-folder",
+                                        "application/courier-folder",
                                         folder.id,
                                     );
                                     e.dataTransfer.effectAllowed = "move";
@@ -2602,7 +2602,7 @@ export function DocTable({
                                                                         return;
                                                                     }
                                                                     e.dataTransfer.setData(
-                                                                        "application/mike-doc",
+                                                                        "application/courier-doc",
                                                                         doc.id,
                                                                     );
                                                                     e.dataTransfer.effectAllowed =

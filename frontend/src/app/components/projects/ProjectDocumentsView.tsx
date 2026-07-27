@@ -19,7 +19,7 @@ import {
     renameProjectDocument,
     renameProjectFolder,
     uploadProjectDocument,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import type { Document } from "@/app/components/shared/types";
 import { AddDocumentsModal } from "@/app/components/modals/AddDocumentsModal";
 import {

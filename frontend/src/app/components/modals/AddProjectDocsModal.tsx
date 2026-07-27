@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Loader2, Upload, X } from "lucide-react";
 import { SearchBar } from "@/app/components/ui/search-bar";
-import { getProject, uploadProjectDocument } from "@/app/lib/mikeApi";
+import { getProject, uploadProjectDocument } from "@/app/lib/courierApi";
 import type { Document } from "../shared/types";
 import { DocFileIcon } from "../shared/FileDirectory";
 import { VersionChip } from "../shared/VersionChip";

@@ -24,7 +24,7 @@ import {
     shareWorkflow,
     updateWorkflow,
     type ProjectPeople,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/courierApi";
 import { UseWorkflowModal } from "@/app/components/workflows/UseWorkflowModal";
 import { WFEditColumnModal } from "@/app/components/workflows/WFEditColumnModal";
 import { WFColumnViewModal } from "@/app/components/workflows/WFColumnViewModal";
