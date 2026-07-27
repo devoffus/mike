@@ -18,7 +18,7 @@ export function SiteLogo({
 }: SiteLogoProps) {
     const landingHref =
         process.env.NODE_ENV === "production"
-            ? "https://courier.com"
+            ? "https://app.courier.com"
             : "http://localhost:3000";
     const sizeClasses = {
         sm: "text-xl",

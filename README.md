@@ -1,12 +1,12 @@
 # Courier
 
-![Courier](https://courier.com/link-image.jpg)
+![Courier](https://app.courier.com/link-image.jpg)
 
 Courier is a legal AI platform that is able to assist you with document review, drafting and legal research.
 
 It has a Next.js frontend, an Express backend, Supabase Auth/Postgres, and Cloudflare R2-compatible object storage.
 
-Website: [courier.com](https://courier.com)
+Website: [app.courier.com](https://app.courier.com)
 
 ## Contents
 
@@ -44,6 +44,58 @@ For a new Supabase database, open the Supabase SQL editor and run:
 The schema file is for fresh deployments and already includes the latest database shape.
 
 For an existing database, do not run the full schema file over production data. Instead, apply the incremental files in `backend/migrations/`: run the migrations dated **after** the version of Courier you currently have deployed, in filename order. Each file is named `YYYYMMDD_<name>.sql` (the date is also recorded in a comment at the top of the file) and is written to be safe to re-run, so when unsure you can re-apply the most recent migrations without harm.
+
+## Upgrading from pre-rebrand Mike deploys
+
+> Skip this section if you are installing Courier fresh against an empty database. It documents the manual operator steps required when upgrading an existing deployment that ran when the project was branded Mike or MikeOSS.
+
+Two breaking changes from the rebrand require manual operator action against any existing production data.
+
+### Encryption salts for stored secrets
+
+The salts used to derive the per-row AES-GCM key for stored users' API keys and MCP connector tokens both changed:
+
+| Table | Old salt | New salt |
+| --- | --- | --- |
+| `public.user_api_keys`         | `mike-user-api-keys-v1` | `courier-user-api-keys-v1` |
+| `public.user_mcp_connectors`   | `mike-user-mcp-v1`      | `courier-user-mcp-v1`      |
+
+The encrypted blob format does not carry a version prefix, so the new code **cannot decrypt values encrypted with the old salt**. The backend's `decrypt()` returns `null` on auth-tag failure rather than throwing, so upgraded installations will appear to silently lose every user's saved API key and MCP connection.
+
+Two options, in order of operational difficulty:
+
+1. **Wipe and re-add.** Surface a "please re-add your API keys and reconnect MCP servers" banner in your release notes, then truncate the two tables:
+
+   ```sql
+   delete from public.user_api_keys;
+   delete from public.user_mcp_connectors;
+   ```
+
+2. **Re-encrypt in place** (preserves user data). Run a one-off Node script that reads each row, decrypts with the old salt, re-encrypts with the new salt, and UPSERTs back. The `USER_API_KEYS_ENCRYPTION_SECRET` env var must remain unchanged across the upgrade (it is the password input to `scryptSync`). Stop the backend before running the script to avoid races; restart on the new code afterwards. A reference implementation lives at `backend/scripts/migrate-rebrand-encryption.ts`; an ad-hoc script using `crypto.scryptSync` and `crypto.createDecipheriv` directly works equally well for small user counts.
+
+### R2 object storage bucket
+
+The default value of `R2_BUCKET_NAME` in `backend/.env.example` changed from `mike` to `courier`. Copy or rename the bucket before flipping the env var; otherwise leave `R2_BUCKET_NAME=mike` in your `.env` until ready.
+
+R2 is S3-compatible, so the AWS CLI works with an `--endpoint-url`:
+
+```bash
+# Option A: copy (safer; the old bucket stays around as a rollback target)
+aws s3 sync s3://mike s3://courier \
+  --endpoint-url https://<account-id>.r2.cloudflarestorage.com
+
+# Option B: move (cleaner blast radius once you have validated the copy)
+aws s3 sync s3://mike s3://courier \
+  --endpoint-url https://<account-id>.r2.cloudflarestorage.com
+aws s3 rm s3://mike --recursive \
+  --endpoint-url https://<account-id>.r2.cloudflarestorage.com
+```
+
+After the copy, flip `R2_BUCKET_NAME=courier` in `backend/.env` and restart the backend.
+
+### Optional cleanup
+
+Local Supabase instances used for e2e testing may still hold an `e2e@mike.local` user from before the rebrand. The new e2e setup uses `e2e@courier.local`. The two coexist harmlessly; no action required.
 
 ## Environment
 
